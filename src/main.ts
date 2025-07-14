@@ -1,13 +1,20 @@
+import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
-import { bootstrapSwagger } from './bootstrap';
+import { bootstrapPipes, bootstrapSwagger } from './bootstrap';
 import { appConfig } from './config';
+import { connectToPostgresql } from './database/connect-to-posthresql';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, new FastifyAdapter());
 
+  await connectToPostgresql();
+
   bootstrapSwagger(app);
+  bootstrapPipes(app);
+
+  const logger = new Logger('Bootstrap');
 
   await app.listen(appConfig.port);
 }
