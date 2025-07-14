@@ -14,6 +14,7 @@ export enum Columns {
 
   title = 'title',
   description = 'description',
+  article = 'article',
 
   authorId = 'authorId',
 }
