@@ -35,6 +35,10 @@ module.exports = {
           },
           [Columns.description]: {
             type: DataType.STRING,
+            allowNull: true,
+          },
+          [Columns.article]: {
+            type: DataType.STRING,
             allowNull: false,
           },
           [Columns.authorId]: {
