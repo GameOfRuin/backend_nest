@@ -1,6 +1,7 @@
 import { Provider } from '@nestjs/common';
 import { ClassConstructor } from 'class-transformer';
 import { Model, Sequelize } from 'sequelize-typescript';
+import { appConfig } from '../config';
 import * as entities from './entities';
 
 export const SEQUELIZE = 'SEQUELIZE';
@@ -9,11 +10,7 @@ export const sequelizeProvider: Provider<Sequelize> = {
   provide: SEQUELIZE,
   useFactory: async (): Promise<Sequelize> => {
     const sequelize: Sequelize = new Sequelize({
-      host: 'localhost',
-      database: 'backend',
-      username: 'postgres',
-      password: 'postgrespassword',
-      port: 5455,
+      ...appConfig.postgres,
       dialect: 'postgres',
       logging: false,
     });

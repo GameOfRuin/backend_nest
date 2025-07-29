@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger, NotFoundException } from '@nestjs/common';
 import { inject } from 'inversify';
 import { FindOptions, Includeable, Op } from 'sequelize';
 import { redisArticleKey, redisArticlesKey } from '../../cache/redis.keys';
@@ -46,7 +46,7 @@ export class ArticleService {
     const article = await this.getArticleById(idArticle);
 
     if (article.authorId !== userId) {
-      throw new Error('Invalid article id');
+      throw new NotFoundException('Invalid article id');
     }
     await ArticlesEntity.update(dto, {
       where: { id: idArticle },
@@ -63,7 +63,7 @@ export class ArticleService {
     const article = await this.getArticleById(idArticle);
 
     if (article.authorId !== userId) {
-      throw new Error('Invalid article id');
+      throw new NotFoundException('Invalid article id');
     }
 
     await this.redis.delete(redisArticleKey(idArticle));
@@ -91,7 +91,7 @@ export class ArticleService {
     });
 
     if (!task) {
-      throw new Error('Такой задачи не найдено');
+      throw new NotFoundException('Такой задачи не найдено');
     }
 
     await this.redis.set(redisArticleKey(idArticle), task, {
@@ -131,10 +131,6 @@ export class ArticleService {
     }
 
     const { rows, count: total } = await ArticlesEntity.findAndCountAll(options);
-
-    if (!rows) {
-      throw new Error('ЫЫЫЫЫЫЫ');
-    }
 
     const response = { total, limit, offset, rows };
     await this.redis.set(redisArticlesKey(query), response, {
