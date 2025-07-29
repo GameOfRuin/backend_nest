@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { compare, hash } from 'bcrypt';
 import { inject } from 'inversify';
 import { redisRefreshTokenKey } from '../../cache/redis.keys';
@@ -45,11 +45,11 @@ export class UserService {
       where: { email: dto.email },
     });
     if (!user) {
-      throw new Error();
+      throw new UnauthorizedException();
     }
     const { password } = user.toJSON();
     if (!(await compare(dto.password, password))) {
-      throw new Error();
+      throw new UnauthorizedException();
     }
 
     return await this.getTokenPair(user);
@@ -63,7 +63,7 @@ export class UserService {
 
     const { id } = data;
     if (user.id !== id) {
-      throw new Error();
+      throw new UnauthorizedException();
     }
 
     await this.redis.delete(redisRefreshTokenKey(token));
@@ -76,13 +76,13 @@ export class UserService {
 
     const data = await this.redis.get(redisRefreshTokenKey(refreshToken));
     if (!data) {
-      throw new Error('AAAAAAAAAA');
+      throw new UnauthorizedException();
     }
 
     const { id } = data;
 
     if (userId !== id) {
-      throw new Error('BBBBBBBBBBBBBBBBB');
+      throw new UnauthorizedException();
     }
 
     await this.redis.delete(redisRefreshTokenKey(refreshToken));

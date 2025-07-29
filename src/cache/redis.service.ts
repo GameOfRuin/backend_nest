@@ -2,12 +2,13 @@ import { Logger } from '@nestjs/common';
 import { SetOptions } from '@redis/client';
 import { injectable } from 'inversify';
 import { createClient } from 'redis';
+import { appConfig } from '../config';
 
 @injectable()
 export class RedisService {
   private readonly logger = new Logger('RedisService');
   private readonly redis = createClient({
-    url: 'redis://default:redispassword@localhost:6399/0',
+    url: appConfig.redisUrl,
   });
 
   constructor() {
